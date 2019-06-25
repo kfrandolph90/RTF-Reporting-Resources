@@ -228,7 +228,9 @@ GROUP BY
 
  ------------------- Whole Shebang -------------------
  
- select *
+ select *,ifnull(moat_vid_impressions_analyzed,
+    0) + ifnull(moat_disp_impressions_analyzed,
+    0) AS total_moat_impressions_analyzed
  from datalab 
  left join moat_disp_line using(date,plan_line_id) 
  left join moat_vid_line using(date,plan_line_id)
