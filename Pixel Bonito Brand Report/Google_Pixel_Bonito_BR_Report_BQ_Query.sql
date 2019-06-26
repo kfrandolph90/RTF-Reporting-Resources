@@ -22,7 +22,7 @@ WITH
     SUM(player_vis_and_aud_on_complete_sum) player_vis_and_aud_on_complete_sum,
     SUM(susp_valid_and_inview_gm_meas_sum) susp_valid_and_inview_gm_meas_sum
   FROM
-    `essence-analytics-dwh.rtf_pixel_brand_report.STAGING_moat_fb_video`
+    `essence-analytics-dwh.rtf_pixel_brand_report.moat_fb_vid`
   GROUP BY
     1,
     2
@@ -43,7 +43,7 @@ WITH
     SUM(player_vis_and_aud_on_complete_sum) player_vis_and_aud_on_complete_sum,
     SUM(susp_valid_and_inview_gm_meas_sum) susp_valid_and_inview_gm_meas_sum
   FROM
-    `essence-analytics-dwh.rtf_pixel_brand_report.STAGING_moat_tw_video`
+    `essence-analytics-dwh.rtf_pixel_brand_report.moat_tw_vid`
   GROUP BY
     1,
     2
@@ -64,7 +64,7 @@ WITH
     SUM(player_vis_and_aud_on_complete_sum) player_vis_and_aud_on_complete_sum,
     SUM(susp_valid_and_inview_gm_meas_sum) susp_valid_and_inview_gm_meas_sum
   FROM
-    `essence-analytics-dwh.rtf_pixel_brand_report.STAGING_truview`
+    `essence-analytics-dwh.rtf_pixel_brand_report.moat_yt_trv`
   GROUP BY
     1,
     2
@@ -85,7 +85,7 @@ WITH
     SUM(player_vis_and_aud_on_complete_sum) player_vis_and_aud_on_complete_sum,
     SUM(susp_valid_and_inview_gm_meas_sum) susp_valid_and_inview_gm_meas_sum
   FROM
-    `essence-analytics-dwh.rtf_pixel_brand_report.STAGING_moat_cm_vid`
+    `essence-analytics-dwh.rtf_pixel_brand_report.moat_google_vid`
   GROUP BY
     1,
     2 ),
@@ -100,7 +100,7 @@ WITH
     -- does this tile have valid imps?
     NULL AS iva
   FROM
-    `essence-analytics-dwh.rtf_pixel_brand_report.STAGING_moat_tw_disp`
+    `essence-analytics-dwh.rtf_pixel_brand_report.moat_tw_disp`
   GROUP BY
     1,
     2
@@ -113,7 +113,7 @@ WITH
     SUM(valid_and_viewable) AS valid_and_viewable,
     SUM(iva) AS iva
   FROM
-    `essence-analytics-dwh.rtf_pixel_brand_report.STAGING_moat_ig_disp`
+    `essence-analytics-dwh.rtf_pixel_brand_report.moat_ig_disp`
   GROUP BY
     1,
     2
@@ -126,7 +126,7 @@ WITH
     SUM(valid_and_viewable) AS valid_and_viewable,
     SUM(iva) AS iva
   FROM
-    `essence-analytics-dwh.rtf_pixel_brand_report.STAGING_moat_fb_disp`
+    `essence-analytics-dwh.rtf_pixel_brand_report.moat_fb_disp`
   GROUP BY
     1,
     2
@@ -139,7 +139,7 @@ WITH
     SUM(valid_and_viewable) AS valid_and_viewable,
     SUM(iva) AS iva
   FROM
-    `essence-analytics-dwh.rtf_pixel_brand_report.STAGING_moat_cm_disp`
+    `essence-analytics-dwh.rtf_pixel_brand_report.moat_google_disp`
   GROUP BY
     1,
     2 ),
@@ -189,7 +189,7 @@ END
   SUM(player_vis_and_aud_on_complete_sum) player_vis_and_aud_on_complete_sum,
   SUM(susp_valid_and_inview_gm_meas_sum) susp_valid_and_inview_gm_meas_sum
 FROM
-  `essence-analytics-dwh.rtf_pixel_brand_report.STAGING_yt_res`
+  `essence-analytics-dwh.rtf_pixel_brand_report.moat_yt_res`
 GROUP BY
   1,
   2
@@ -234,4 +234,3 @@ GROUP BY
  from datalab 
  left join moat_disp_line using(date,plan_line_id) 
  left join moat_vid_line using(date,plan_line_id)
- 
