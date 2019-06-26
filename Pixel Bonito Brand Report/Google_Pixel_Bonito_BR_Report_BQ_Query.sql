@@ -20,7 +20,8 @@ WITH
     SUM(player_visible_on_complete_sum) player_visible_on_complete_sum,
     SUM(player_audible_on_complete_sum) player_audible_on_complete_sum,
     SUM(player_vis_and_aud_on_complete_sum) player_vis_and_aud_on_complete_sum,
-    SUM(susp_valid_and_inview_gm_meas_sum) susp_valid_and_inview_gm_meas_sum
+    SUM(susp_valid_and_inview_gm_meas_sum) susp_valid_and_inview_gm_meas_sum,
+    null as _5_sec_in_view_impressions -- has 3sec inview
   FROM
     `essence-analytics-dwh.rtf_pixel_brand_report.moat_fb_vid`
   GROUP BY
@@ -41,7 +42,8 @@ WITH
     SUM(player_visible_on_complete_sum) player_visible_on_complete_sum,
     SUM(player_audible_on_complete_sum) player_audible_on_complete_sum,
     SUM(player_vis_and_aud_on_complete_sum) player_vis_and_aud_on_complete_sum,
-    SUM(susp_valid_and_inview_gm_meas_sum) susp_valid_and_inview_gm_meas_sum
+    SUM(susp_valid_and_inview_gm_meas_sum) susp_valid_and_inview_gm_meas_sum,
+    null as _5_sec_in_view_impressions -- has two sec inview
   FROM
     `essence-analytics-dwh.rtf_pixel_brand_report.moat_tw_vid`
   GROUP BY
@@ -62,7 +64,8 @@ WITH
     SUM(player_visible_on_complete_sum) player_visible_on_complete_sum,
     SUM(player_audible_on_complete_sum) player_audible_on_complete_sum,
     SUM(player_vis_and_aud_on_complete_sum) player_vis_and_aud_on_complete_sum,
-    SUM(susp_valid_and_inview_gm_meas_sum) susp_valid_and_inview_gm_meas_sum
+    SUM(susp_valid_and_inview_gm_meas_sum) susp_valid_and_inview_gm_meas_sum,
+    SUM(_5_sec_in_view_impressions) as _5_sec_in_view_impressions
   FROM
     `essence-analytics-dwh.rtf_pixel_brand_report.moat_yt_trv`
   GROUP BY
@@ -83,7 +86,8 @@ WITH
     SUM(player_visible_on_complete_sum) player_visible_on_complete_sum,
     SUM(player_audible_on_complete_sum) player_audible_on_complete_sum,
     SUM(player_vis_and_aud_on_complete_sum) player_vis_and_aud_on_complete_sum,
-    SUM(susp_valid_and_inview_gm_meas_sum) susp_valid_and_inview_gm_meas_sum
+    SUM(susp_valid_and_inview_gm_meas_sum) susp_valid_and_inview_gm_meas_sum,
+    SUM(_5_sec_in_view_impressions) as _5_sec_in_view_impressions
   FROM
     `essence-analytics-dwh.rtf_pixel_brand_report.moat_google_vid`
   GROUP BY
@@ -95,8 +99,9 @@ WITH
   SELECT
     date,
     CAST(REGEXP_EXTRACT(level2_label,r"OPID-(\d+)") AS int64) AS opid,
-    SUM(impressions_analyzed) AS moat_disp_impressions_analyzed,
+    SUM(impressions_analyzed) AS moat_disp_impressions_analyzed,    
     SUM(susp_valid) AS moat_dis_susp_valid,
+    NULL as valid_and_viewable,
     -- does this tile have valid imps?
     NULL AS iva
   FROM
@@ -110,6 +115,7 @@ WITH
     date,
     CAST(REGEXP_EXTRACT(level4_label,r"OPID-(\d+)") AS int64) AS opid,
     SUM(impressions_analyzed) AS impressions_analyzed,
+    null AS moat_dis_susp_valid,    
     SUM(valid_and_viewable) AS valid_and_viewable,
     SUM(iva) AS iva
   FROM
@@ -123,6 +129,7 @@ WITH
     date,
     CAST(REGEXP_EXTRACT(level4_label,r"OPID-(\d+)") AS int64) AS opid,
     SUM(impressions_analyzed) AS impressions_analyzed,
+    null AS moat_dis_susp_valid,
     SUM(valid_and_viewable) AS valid_and_viewable,
     SUM(iva) AS iva
   FROM
@@ -136,7 +143,8 @@ WITH
     date,
     CAST(REGEXP_EXTRACT(level3_label,r"OPID-(\d+)") AS int64) AS opid,
     SUM(impressions_analyzed) AS impressions_analyzed,
-    SUM(valid_and_viewable) AS valid_and_viewable,
+    SUM(susp_valid) AS moat_dis_susp_valid,
+    SUM(valid_and_viewable) AS valid_and_viewable,    
     SUM(iva) AS iva
   FROM
     `essence-analytics-dwh.rtf_pixel_brand_report.moat_google_disp`
@@ -150,7 +158,7 @@ WITH
   olive_meta.Olive_Plan_Line_ID as plan_line_id,
   sum(moat_vid_impressions_analyzed) as moat_vid_impressions_analyzed,
   SUM(moat_vid_susp_valid) AS moat_vid_susp_valid,
-    SUM(valid_and_viewable) AS valid_and_viewable,
+    SUM(valid_and_viewable) AS moat_vid_valid_and_viewable,
     SUM(reached_first_quart_sum) reached_first_quart_sum,
     SUM(reached_second_quart_sum) reached_second_quart_sum,
     SUM(reached_third_quart_sum) reached_third_quart_sum,
@@ -158,7 +166,9 @@ WITH
     SUM(player_visible_on_complete_sum) player_visible_on_complete_sum,
     SUM(player_audible_on_complete_sum) player_audible_on_complete_sum,
     SUM(player_vis_and_aud_on_complete_sum) player_vis_and_aud_on_complete_sum,
-    SUM(susp_valid_and_inview_gm_meas_sum) susp_valid_and_inview_gm_meas_sum
+    SUM(susp_valid_and_inview_gm_meas_sum) susp_valid_and_inview_gm_meas_sum,
+    SUM(_5_sec_in_view_impressions) as _5_sec_in_view_impressions
+
     from moat_vid
     
     LEFT JOIN  `essence-analytics-dwh.rtf_pixel_brand_report.STAGING_olive_plan_placement` olive_meta
@@ -179,7 +189,7 @@ END
   AS plan_line_id,
   SUM(impressions_analyzed) AS moat_vid_impressions_analyzed,
   SUM(susp_valid) AS moat_vid_susp_valid,
-  SUM(valid_and_viewable) AS valid_and_viewable,
+  SUM(valid_and_viewable) AS moat_vid_valid_and_viewable,
   SUM(reached_first_quart_sum) reached_first_quart_sum,
   SUM(reached_second_quart_sum) reached_second_quart_sum,
   SUM(reached_third_quart_sum) reached_third_quart_sum,
@@ -187,7 +197,8 @@ END
   SUM(player_visible_on_complete_sum) player_visible_on_complete_sum,
   SUM(player_audible_on_complete_sum) player_audible_on_complete_sum,
   SUM(player_vis_and_aud_on_complete_sum) player_vis_and_aud_on_complete_sum,
-  SUM(susp_valid_and_inview_gm_meas_sum) susp_valid_and_inview_gm_meas_sum
+  SUM(susp_valid_and_inview_gm_meas_sum) susp_valid_and_inview_gm_meas_sum,
+  SUM(_5_sec_in_view_impressions) as _5_sec_in_view_impressions
 FROM
   `essence-analytics-dwh.rtf_pixel_brand_report.moat_yt_res`
 GROUP BY
@@ -201,7 +212,10 @@ GROUP BY
    date,
   olive_meta.Olive_Plan_Line_ID as plan_line_id,
   sum(moat_disp_impressions_analyzed) as moat_disp_impressions_analyzed,
-  sum(moat_dis_susp_valid) as moat_dis_susp_valid
+  sum(moat_dis_susp_valid) as moat_dis_susp_valid,
+  SUM(valid_and_viewable) AS moat_dis_valid_and_viewable, 
+  sum(iva) as iva
+
   from moat_disp
   LEFT JOIN  `essence-analytics-dwh.rtf_pixel_brand_report.STAGING_olive_plan_placement` olive_meta
   on moat_disp.opid = olive_meta.Olive_Olive_Placement_ID
@@ -227,10 +241,18 @@ GROUP BY
 
 
  ------------------- Whole Shebang -------------------
- 
+
  select *,ifnull(moat_vid_impressions_analyzed,
     0) + ifnull(moat_disp_impressions_analyzed,
-    0) AS total_moat_impressions_analyzed
+    0) AS total_moat_impressions_analyzed,
+
+    ifnull(moat_vid_susp_valid,
+    0) + ifnull(moat_dis_susp_valid,
+    0) AS total_moat_valid_impressions,
+
+    ifnull(moat_dis_valid_and_viewable,0) + ifnull(moat_vid_valid_and_viewable,
+    0) AS total_moat_valid__viewable_impressions
+
  from datalab 
  left join moat_disp_line using(date,plan_line_id) 
  left join moat_vid_line using(date,plan_line_id)
