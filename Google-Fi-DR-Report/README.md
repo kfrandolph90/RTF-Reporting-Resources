@@ -18,6 +18,8 @@
 * YouTube
 * Yahoo
 * PLA
+#### Google Fi DR Report Architecture Diagram
+![Global Spend Architecture Diagram](https://github.com/kfrandolph90/RTF-Reporting-Resources/blob/master/Google-Fi-DR-Report/Google_Fi_DR_Report_Architecture_Diagram.PNG)
 ### Link to Datastudio: 
 #### https://datastudio.google.com/open/12Fn_R7QyoWz3_Tq7kkgnwshWu99S1nBz
 ### Link to SQL in GitHub Update as of Today, 6/21/2019
