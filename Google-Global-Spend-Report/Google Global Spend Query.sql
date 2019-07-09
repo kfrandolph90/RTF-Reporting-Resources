@@ -80,7 +80,7 @@ SELECT *,
       WHEN Region_Campaign_Name IS NOT NULL THEN Region_Campaign_Name
 END) as Region_Prep,
 
----- This is the Product_Final column - it's only adding a little bit of data but it's still important.
+---- This is the Product_Final column -- it's only adding a little bit of data but it's still important.
 (CASE WHEN Product_Data_Validation_Tab IS NOT NULL THEN Product_Data_Validation_Tab
       WHEN Product_Campaign_Name IS NOT NULL THEN Product_Campaign_Name ELSE NULL 
 END) AS Product_Final,
