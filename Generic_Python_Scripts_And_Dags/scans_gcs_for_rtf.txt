@@ -1,0 +1,98 @@
+
+from datetime import date, timedelta, datetime
+import logging
+from google.cloud import bigquery as bq
+from googleapiclient import discovery
+from google.oauth2 import service_account
+import pandas as pd
+import pandas as pd
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
+import re
+
+
+from dateutil.relativedelta import relativedelta
+
+import os
+import sys
+from datetime import datetime, timedelta, date
+import sys
+if sys.version_info[0] < 3:
+    from StringIO import StringIO
+else:
+    from io import StringIO
+import numpy as np
+
+
+#Don't edit any of this, it is good the way it is.
+
+from google.oauth2 import service_account
+import json
+import base64
+from google.cloud import kms_v1
+from google.cloud import storage as gcsStorage
+
+def fetch_blob(bucket_name, source_blob_name):
+    """Downloads a blob from the bucket."""
+    storage_client = gcsStorage.Client()
+    bucket = storage_client.get_bucket(bucket_name)
+    blob = bucket.blob(source_blob_name)
+    blob_data=blob.download_as_string()
+    return blob_data
+
+
+def list_blob(bucket_name,prefix):
+    """Lists csv files contained in specified GCS bucket"""
+    storage_client = gcsStorage.Client()
+    bucket = storage_client.get_bucket(bucket_name)
+    blobs = bucket.list_blobs(prefix=prefix)
+    return blobs
+
+
+def decrypt_symmetric(encrypted_text):
+    """Decrypts input ciphertext using the provided symmetric CryptoKey."""
+
+    # crypto key params
+    project_id='essence-analytics-etl-207615'
+    location_id='global'
+    key_ring_id='TeamAnalytics'
+    crypto_key_id='SecureAnalytics'
+    # Creates an API client for the KMS API.
+    client = kms_v1.KeyManagementServiceClient()
+    response=''
+    # The resource name of the CryptoKey.
+    name = client.crypto_key_path_path(project_id, location_id, key_ring_id,
+                                       crypto_key_id)
+    # Use the KMS API to decrypt the data.
+
+    ciphertext=base64.b64decode(encrypted_text)
+    response = json.loads(client.decrypt(name, ciphertext).plaintext)
+    return response
+
+def getCredentialsFromVault(service_account_email):
+    StorageBucket='essence-analytics-5a9706e0-d22d-40f3-abde-2a996137bb0f'
+    blob_name=service_account_email+'.json.enc'
+    enc_key=fetch_blob(StorageBucket, blob_name)
+    credentials = service_account.Credentials.from_service_account_info(decrypt_symmetric(enc_key))
+    print(credentials)
+    return credentials
+
+    #Scope, this one is good for everything-spreadsheets (reading and writing), google drive and bigquery.
+API_SCOPES = ['https://www.googleapis.com/auth/spreadsheets',
+                  'https://spreadsheets.google.com/feeds',
+                  'https://www.googleapis.com/auth/drive',
+                  'https://www.googleapis.com/auth/cloud-platform']
+
+service_account_email='data-strategy@essence-analytics-dwh.iam.gserviceaccount.com'
+
+credentialsFromVault=getCredentialsFromVault(service_account_email)
+credentialsFromVault = credentialsFromVault.with_scopes(API_SCOPES)
+
+captureRTF = list_blob('rtf_temp')
+
+l = list(captureRTF)
+
+dir(l[0])
+
+for b in l:
+    print(b.name)
