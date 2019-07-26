@@ -1,0 +1,209 @@
+view: GStore_Plan_Placement_Name {
+
+  derived_table: {
+
+    sql:
+      SELECT DISTINCT
+        plan_placement_id, plan_placement_name,
+              CASE WHEN plan_placement_name LIKE '%Thermo%' THEN 'Nest Thermostat'
+              WHEN plan_placement_name LIKE '%Doorbell%' THEN 'Nest Doorbell'
+              WHEN plan_placement_name LIKE '%Nest Cam%' THEN 'Nest Camera'
+              WHEN plan_placement_name LIKE '%Cases%' THEN 'Cases'
+              WHEN plan_placement_name LIKE '%Pixel Lite%' THEN 'Pixel 3A'
+              WHEN plan_placement_name LIKE '%Daydream%' THEN 'Daydream View'
+              WHEN plan_placement_name LIKE '%All Product%' THEN 'All Product'
+              WHEN plan_placement_name LIKE '%Hub%' THEN 'Home Hub'
+              WHEN plan_placement_name LIKE '%MT%' THEN 'Pixel 3A'
+              WHEN plan_placement_name LIKE '%Wifi%' THEN 'Google WiFi'
+              WHEN plan_placement_name LIKE '%_Home_%' THEN 'Home'
+              WHEN plan_placement_name LIKE '%Mini%' THEN 'Home Mini'
+              WHEN plan_placement_name LIKE '%book%' THEN 'Pixelbook'
+              WHEN plan_placement_name LIKE '%bud%' THEN 'Pixel Buds'
+              WHEN plan_placement_name LIKE '%Slate%' THEN 'Pixel Slate'
+              WHEN plan_placement_name LIKE '%Stand%' THEN 'Pixel Stand'
+              WHEN plan_placement_name LIKE '%Chromecast%' THEN 'Chromecast'
+              WHEN plan_placement_name LIKE '%CC%' THEN 'Chromecast'
+              WHEN plan_placement_name LIKE '%Max%' THEN 'Home Max'
+              WHEN plan_placement_name LIKE '%Clips%' THEN 'Clips'
+              WHEN plan_placement_name LIKE '%Hub Max%' THEN 'Home Hub Max'
+              WHEN plan_placement_name LIKE '%_NonRMKT_%' THEN 'DR - Prospecting'
+              WHEN plan_placement_name LIKE '%_RMKT_%' THEN 'DR - RMKT'
+              WHEN plan_placement_name LIKE '%--%' THEN 'Exclude'
+              WHEN plan_placement_name LIKE '%TrV%' THEN 'DR - Video'
+              WHEN plan_placement_name LIKE '%Reddit%' THEN 'DR - Social'
+              WHEN plan_placement_name LIKE '%Twitter%' THEN 'DR - Social'
+              WHEN plan_placement_name LIKE '%Trade%' THEN 'DR - Trade-In'
+              WHEN plan_placement_name LIKE '%Affiliate%' THEN 'DR - Affiliate'
+              WHEN plan_placement_name LIKE '%RLSA%' THEN 'DR - SEM RLSA'
+              WHEN plan_placement_name LIKE '%BKWS%' THEN 'DR - SEM BKWS'
+              WHEN plan_placement_name LIKE '%SKWS%' THEN 'DR - SEM SKWS'
+              WHEN plan_placement_name LIKE '%Placeholder%' THEN 'Placeholder'
+              WHEN plan_placement_name LIKE '%SEM%' THEN 'null'
+              WHEN plan_placement_name LIKE '%_PG_%' THEN 'Programmatic Guaranteed'
+              WHEN plan_placement_name LIKE '%_PMP_%' THEN 'Programmatic Marketplace'
+              WHEN plan_placement_name LIKE '%Conquesting%' THEN 'Competitive Conquesting'
+              WHEN plan_placement_name LIKE '%iPhone%' THEN 'Trade-In: iPhone'
+              WHEN plan_placement_name LIKE '%Market%' THEN 'In-Market'
+              WHEN plan_placement_name LIKE '%ATC%' THEN 'RMKT - ATC'
+              WHEN plan_placement_name LIKE '%High Indexer%' THEN 'Category Indexers'
+              WHEN plan_placement_name LIKE '%PDP%' THEN 'RMKT - PDP'
+              WHEN plan_placement_name LIKE '%Clickers%' THEN 'Engagers'
+              WHEN plan_placement_name LIKE '%Father%' THEN 'Keyword Contextual (Father Day)'
+              WHEN plan_placement_name LIKE '%Cross%' THEN 'X-Sell'
+              WHEN plan_placement_name LIKE '%Similar%' THEN 'Similar Audiences'
+              WHEN plan_placement_name LIKE '%Category%' THEN 'RMKT - Category Pages'
+              WHEN plan_placement_name LIKE '%Nexus%' THEN 'Trade-In: Nexus'
+              WHEN plan_placement_name LIKE '%Android%' THEN 'Trade-In: Android'
+              WHEN plan_placement_name LIKE '%IMS%' THEN 'In-Market'
+              WHEN plan_placement_name LIKE '%_Remarketing_%' THEN 'RMKT - Other'
+              WHEN plan_placement_name LIKE '%Offers%' THEN 'RMKT - Offers Page'
+              WHEN plan_placement_name LIKE '%Abandoners%' THEN 'RMKT - ATC'
+              WHEN plan_placement_name LIKE '%Homepage%' THEN 'RMKT - HP'
+              WHEN plan_placement_name LIKE '%MT%' THEN 'Trade-In: Pixel'
+              WHEN plan_placement_name LIKE '%Whitelist%' THEN 'Whitelisted Sites'
+              WHEN plan_placement_name LIKE '%Scrutineer%' THEN 'Survey'
+              WHEN plan_placement_name LIKE '%text ad%' THEN 'RDA'
+              WHEN plan_placement_name LIKE '%_BAN_%' THEN 'Banner'
+              WHEN plan_placement_name LIKE '%Native%' THEN 'Native'
+              WHEN plan_placement_name LIKE '%In-Stream%' THEN 'In-Stream Video'
+              WHEN plan_placement_name LIKE '%Reddit%' THEN 'In-Feed'
+              WHEN plan_placement_name LIKE '%Twitter%' THEN 'In-Feed'
+              WHEN plan_placement_name LIKE '%Facebook%' THEN 'In-Feed'
+              WHEN plan_placement_name LIKE '%CPM%' THEN 'CPM'
+              WHEN plan_placement_name LIKE '%CPC%' THEN 'CPC'
+              WHEN plan_placement_name LIKE '%tCPA%' THEN 'tCPA'
+              WHEN plan_placement_name LIKE '%Algo%' THEN 'Custom Algo'
+              WHEN plan_placement_name LIKE '%YouTube%' THEN 'CPV'
+              WHEN plan_placement_name LIKE '%In-Stream%' THEN 'CPM'
+              WHEN plan_placement_name LIKE '%Twitter%' THEN 'CPE'
+              WHEN plan_placement_name LIKE '%Open Exchange%' THEN 'Custom Algo'
+              WHEN plan_placement_name LIKE '%GDN%' THEN 'ROAS'
+              WHEN plan_placement_name LIKE '%Exact%' THEN 'Exact'
+              WHEN plan_placement_name LIKE '%Phrase%' THEN 'Phrase'
+              WHEN plan_placement_name LIKE '%BMM%' THEN 'BMM'
+              ELSE 'Other' END as "GStore_Plan_Placement_Name" FROM  ${plan_dim_pl.SQL_TABLE_NAME} ;;
+  }
+
+
+  dimension: noah_plan_placement_id  {
+    type:  string
+    primary_key:  yes
+    sql:  ${TABLE}.plan_placement_id ;;
+    hidden: yes
+
+  }
+
+  dimension: RTF_Plan_Placement_Name {
+    type:  string
+    primary_key:  no
+    sql: ${TABLE}.GStore_Plan_Placement_Name ;;
+  }
+
+}
+
+view: GStore_Plan_Line_Property {
+
+  derived_table: {
+
+    sql:
+      SELECT DISTINCT
+      plan_line_property, CASE WHEN plan_line_property LIKE '%Open Exchange AdX%' THEN '72.00%'
+    WHEN plan_line_property LIKE '%Open Exchange NonAdX%' THEN '100.00%'
+    WHEN plan_line_property LIKE '%GDN%' THEN '68.00%'
+    WHEN plan_line_property LIKE '%Added Value%' THEN '0.00%'
+    WHEN plan_line_property LIKE '%AV%' THEN '0.00%'
+    WHEN plan_line_property LIKE '%Bing%' THEN '100.00%'
+    WHEN plan_line_property LIKE '%AdWords%' THEN '10.00%'
+    WHEN plan_line_property LIKE '%Twitter%' THEN '100.00%'
+    WHEN plan_line_property LIKE '%Reddit%' THEN '100.00%'
+    WHEN plan_line_property LIKE '%YouTube%' THEN '55.00%'
+    WHEN plan_line_property LIKE '%Discovery%' THEN '0.00%'
+    WHEN plan_line_property LIKE '%Sharethrough%' THEN '100.00%'
+    WHEN plan_line_property LIKE '%Conde%' THEN '100.00%'
+    WHEN plan_line_property LIKE '%Google Search%' THEN '10.00%'
+    WHEN plan_line_property LIKE '%Bing%' THEN '100.00%'
+    WHEN plan_line_property LIKE '%Placeholder%' THEN 'Placeholder'
+    ELSE 'Other' END as "GStore_Plan_Line_Property"
+      FROM ${plan_dim_pl.SQL_TABLE_NAME}  ;;
+  }
+
+
+  dimension: noah_plan_line_property {
+    type:  string
+    primary_key:  yes
+    sql:  ${TABLE}.plan_line_property ;;
+    hidden: yes
+  }
+
+  dimension: RTF_Plan_Line_Property {
+    type:  string
+    sql: ${TABLE}.GStore_Plan_Line_Property  ;;
+    primary_key:  no
+  }
+}
+
+
+
+################################################################################################################################################################################################################################################################################################################################################################
+
+view: GStore_SEM {
+
+
+  derived_table: {
+
+    sql:
+       SELECT
+        CAST(${ds3_campaign.SQL_TABLE_NAME}.campaign_id AS VARCHAR)  AS "campaign_id",
+        ${ds3_campaign.SQL_TABLE_NAME}.campaign  AS "campaign"
+      FROM  ${ds3_campaign.SQL_TABLE_NAME}
+          group by 1, 2
+          ;;
+  }
+
+
+  dimension : noah_campaign {
+
+    type: string
+    primary_key: yes
+    sql: ${TABLE}.campaign ;;
+    hidden: yes
+
+  }
+
+
+  dimension: GStore_SEM {
+    type: string
+    primary_key: no
+    sql: CASE WHEN  ${TABLE}.campaign LIKE '%Preferred%' THEN 'Preferred Care'
+              WHEN ${TABLE}.campaign LIKE '%Enjoy%' THEN 'Enjoy'
+              WHEN ${TABLE}.campaign LIKE '%Trade%' THEN 'Pixel'
+              WHEN ${TABLE}.campaign LIKE '%Cases%' THEN 'Cases'
+              WHEN ${TABLE}.campaign LIKE '%Pixel Lite%' THEN 'Pixel 3A'
+              WHEN ${TABLE}.campaign LIKE '%Stand%' THEN 'Pixel Stand'
+              WHEN ${TABLE}.campaign LIKE '%Cases%' THEN 'Cases'
+              WHEN ${TABLE}.campaign LIKE '%Buds%' THEN 'Pixel Buds'
+              WHEN ${TABLE}.campaign LIKE '%RLSA%' THEN 'DR - SEM RLSA'
+              WHEN ${TABLE}.campaign LIKE '%BKWS%' THEN 'DR - SEM BKWS'
+              WHEN ${TABLE}.campaign LIKE '%SKWS%' THEN 'DR - SEM SKWS'
+              WHEN ${TABLE}.campaign LIKE '%_NonRMKT_%' THEN 'DR - Prospecting'
+              WHEN ${TABLE}.campaign LIKE '%_RMKT_%' THEN 'DR - RMKT'
+              WHEN ${TABLE}.campaign LIKE '%--%' THEN 'Exclude'
+              WHEN ${TABLE}.campaign LIKE '%TrV%' THEN 'DR - Video'
+              WHEN ${TABLE}.campaign LIKE '%Reddit%' THEN 'DR - Social'
+              WHEN ${TABLE}.campaign LIKE '%Twitter%' THEN 'DR - Social'
+              WHEN ${TABLE}.campaign LIKE '%Trade%' THEN 'DR - Trade-In'
+              WHEN ${TABLE}.campaign LIKE '%Affiliate%' THEN 'DR - Affiliate'
+              WHEN ${TABLE}.campaign LIKE '%Exact%' THEN 'Exact'
+              WHEN ${TABLE}.campaign LIKE '%Phrase%' THEN 'Phrase'
+              WHEN ${TABLE}.campaign LIKE '%BMM%' THEN 'BMM'
+              WHEN ${TABLE}.campaign LIKE '%SEM%' THEN 'null'
+              WHEN ${TABLE}.campaign LIKE '%RLSA%' THEN 'ROAS'
+              WHEN ${TABLE}.campaign LIKE '%SKWS%' THEN 'CPC'
+              WHEN ${TABLE}.campaign LIKE '%BKWS%' THEN 'ROAS'
+              ELSE 'Other' END ;;
+
+
+
+    }
+  }
+

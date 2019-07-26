@@ -1,0 +1,186 @@
+view: Region_Plan_Region {
+
+  derived_table: {
+
+    sql: SELECT DISTINCT plan_region, (CASE WHEN plan_region = 'Global' THEN NULL ELSE plan_region END) AS "Region_Plan_Region" FROM ${plan_dim_pl.SQL_TABLE_NAME} Where plan_region is not NULL ;;
+  }
+
+
+  dimension: product_pk  {
+    type:  string
+    primary_key:  yes
+    sql:  ${TABLE}.plan_region ;;
+    hidden: yes
+
+  }
+
+  dimension: RTF_Plan_Region {
+    type:  string
+    primary_key:  no
+    sql: ${TABLE}.Region_Plan_Region ;;
+  }
+
+
+  }
+
+
+
+
+
+
+############################################################
+
+
+view: Region_Plan_Line_Name {
+
+  derived_table: {
+
+    sql: SELECT DISTINCT plan_line_name, (CASE WHEN plan_line_name LIKE '%Global%' THEN 'Global'
+      WHEN plan_line_name LIKE '%EMEA%' THEN 'EMEA'
+      WHEN plan_line_name LIKE '%APAC%' THEN 'APAC'
+      WHEN plan_line_name LIKE '%LATAM%' THEN 'LATAM'
+      WHEN plan_line_name LIKE '%NA%' OR plan_line_name LIKE '%US%' OR plan_line_name LIKE '%Canada%' OR  plan_line_name LIKE '%United States%' OR plan_line_name LIKE '%North America%' OR plan_line_name LIKE '%CA%' THEN 'NA'
+END) AS Region_Plan_Line_Name FROM ${plan_dim_pl.SQL_TABLE_NAME}  ;;
+  }
+
+
+  dimension: plan_line_name_pk  {
+    type:  string
+    primary_key:  yes
+    sql:  ${TABLE}.plan_line_name ;;
+    hidden: yes
+
+  }
+
+  dimension: RTF_Plan_Line_Name {
+    type:  string
+    primary_key:  no
+    sql: ${TABLE}.Region_Plan_Line_Name ;;
+  }
+
+
+}
+
+
+
+
+############################################################
+
+
+view: Region_Plan_Name {
+
+  derived_table: {
+
+    sql: SELECT DISTINCT plan_name, (CASE WHEN plan_name LIKE '%Global%' THEN 'Global'
+      WHEN plan_name LIKE '%EMEA%' THEN 'EMEA'
+      WHEN plan_name LIKE '%APAC%' THEN 'APAC'
+      WHEN plan_name LIKE '%LATAM%' THEN 'LATAM'
+      WHEN plan_name LIKE '%NA%' OR plan_name LIKE '%US%' OR plan_name LIKE '%Canada%' OR  plan_name LIKE '%United States%' OR plan_name LIKE '%North America%' OR plan_name LIKE '%CA%' THEN 'NA'
+END) AS Region_Plan_Name FROM ${plan_dim_pl.SQL_TABLE_NAME}  ;;
+  }
+
+
+  dimension: plan_name_pk  {
+    type:  string
+    primary_key:  yes
+    sql:  ${TABLE}.plan_name ;;
+    hidden: yes
+
+  }
+
+  dimension: RTF_Plan_Name {
+    type:  string
+    primary_key:  no
+    sql: ${TABLE}.Region_Plan_Name ;;
+  }
+  }
+
+
+############################################################
+
+
+view : Region_Campaign_Name  {
+
+    derived_table: {
+
+      sql: SELECT DISTINCT campaign_name, (CASE WHEN campaign_name LIKE '%Global%' THEN 'Global'
+              WHEN campaign_name LIKE '%EMEA%' THEN 'EMEA'
+              WHEN campaign_name LIKE '%APAC%' THEN 'APAC'
+              WHEN campaign_name LIKE '%LATAM%' THEN 'LATAM'
+              WHEN campaign_name LIKE '%NA%' OR campaign_name LIKE '%US%' OR campaign_name LIKE '%Canada%' OR  campaign_name LIKE '%United States%' OR campaign_name LIKE '%North America%' OR campaign_name LIKE '%CA%' THEN 'NA'
+        END) AS Region_Campaign_Name FROM ${plan_dim_pl.SQL_TABLE_NAME}  ;;
+    }
+
+
+    dimension: campaign_name_pk  {
+      type:  string
+      primary_key:  yes
+      sql:  ${TABLE}.campaign_name ;;
+      hidden: yes
+
+    }
+
+    dimension: RTF_Campaign_Name {
+      type:  string
+      primary_key:  no
+      sql: ${TABLE}.Region_Campaign_Name ;;
+    }
+
+
+
+}
+
+
+
+
+view : Product_Campaign_Name  {
+
+  derived_table: {
+
+    sql: SELECT DISTINCT campaign_name, (CASE WHEN campaign_name LIKE '%YouTube%' THEN 'YouTube'
+      WHEN campaign_name LIKE '%Pixel%' THEN 'Pixel'
+      WHEN campaign_name LIKE '%Chromebook%' THEN 'Chrome'
+      WHEN campaign_name LIKE '%Google Play%' THEN 'Play Store'
+      WHEN campaign_name LIKE '%Google play%' THEN 'Play Store'
+      WHEN campaign_name LIKE '%Play Store%' THEN 'Play Store'
+      WHEN campaign_name LIKE '%Project Fi%' THEN 'Project Fi'
+      WHEN campaign_name LIKE '%Google Home%' THEN 'Google Home'
+      WHEN campaign_name LIKE '%Duo%' THEN 'Duo'
+      WHEN campaign_name LIKE '%Nest%' THEN 'Nest'
+      WHEN campaign_name LIKE '%Multi-App%' THEN 'Multi-App'
+      WHEN campaign_name LIKE '%Google Search App%' THEN 'Google Search App'
+      WHEN campaign_name LIKE '%Google Store%' THEN 'GSA'
+      WHEN campaign_name LIKE '%GSA%' THEN 'GSA'
+      WHEN campaign_name LIKE '%User Education%' THEN 'User Education'
+      WHEN campaign_name LIKE '%Google Wallet%' THEN 'Google Wallet'
+      WHEN campaign_name LIKE '%Google App%' THEN 'Google App'
+      WHEN campaign_name LIKE '%GApp%' THEN 'Google App'
+      WHEN campaign_name LIKE '%GStore%' THEN 'GSA'
+      WHEN campaign_name LIKE '%Google Brand%' THEN 'Google Brand'
+      WHEN campaign_name LIKE '%Google Fiber%' THEN 'Google Fiber'
+      WHEN campaign_name LIKE '%Google Express%' THEN 'Google Express'
+      WHEN campaign_name LIKE '%Google Agency Test Campaign' THEN NULL
+      WHEN campaign_name LIKE '%Android One%' THEN 'Android'
+      WHEN campaign_name LIKE '%Stadia%' THEN 'Stadia'
+      ELSE NULL
+END) AS Product_Campaign_Name FROM ${plan_dim_pl.SQL_TABLE_NAME}  ;;
+  }
+
+
+  dimension: product_campaign_name_pk  {
+    type:  string
+    primary_key:  yes
+    sql:  ${TABLE}.campaign_name ;;
+    hidden: yes
+
+  }
+
+  dimension: RTF_Product_Campaign_Name {
+    type:  string
+    primary_key:  no
+    sql: ${TABLE}.Product_Campaign_Name ;;
+  }
+
+
+
+}

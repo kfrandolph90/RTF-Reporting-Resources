@@ -1,0 +1,588 @@
+include: "//olive/pr_essence_base.model.lkml"   # inherit base model from parent project
+include: "PR*.view.lkml"
+
+
+####################################################### *** Cross Channel *** #####################################################
+explore: google_cross_channel {
+  extension: required
+  label: "GStore Cross Channel Copy"
+  extends: [cross_channel_dl_base]
+
+  sql_always_where: ${plan_dim.client_id} IN (2219,2540,2966) ;;
+  always_filter: {
+    filters: {
+      field: plan_dim.client_name
+      value: "Google, Nest Labs, Google Fiber"
+    }
+  }
+
+  join: calendar {
+    from: pr_all_google_calendar_dim
+    fields: [allgoogle_calendar_set*]
+  }
+
+  join: googleinitiative {
+    from: googleinitiative
+    view_label: "MRF"
+    sql_on: ${googleinitiative.market_budget_id} = ${plan_dim.plan_id} ;;
+    relationship: one_to_one
+    type: left_outer
+    fields: [googleinitiative_set*]
+  }
+
+  join: pr_media_plan_budget {
+    fields: [cc_set_extended*]
+  }
+
+}
+
+
+explore: google_cross_channel_dl {
+  extends: [google_cross_channel]
+  hidden: yes
+}
+
+
+
+
+########################################################### *** DS3 Campaign *** #################################################################
+explore: google_ds3_campaign {
+  extension: required
+  label: "GStore DS3 Campaign Copy"
+  extends: [ds3_campaign_dl_base]
+  fields: [ ds3_campaign.ds3_campaign_fields_that_use_olive_dim_set*,
+    ds3_campaign.ds3_campaign_fields_without_olive_dim_set*,
+    calendar.allgoogle_calendar_set*,
+    unmapped_platform_data.unmapped_entities_set*,
+    fin_spend.measures_for_platforms*,
+    fin_spend.events*,
+    plan_dim.detail*,
+    plan_dim.extra_detail*,
+    mapped_events.mapped_events_set*,
+    segmentation_pivot.segm_set*,
+    segmentation.category,
+    segmentation.segment,
+    pr_media_plan_budget.cc_measures_and_dims*,
+    pr_plan_line_budget.cc_measures*,
+    tags.tags_set*,
+    googleinitiative.googleinitiative_set*,
+    imp_share.impression_set*,GStore_SEM.GStore_SEM]
+
+
+  sql_always_where: ${ds3_campaign.advertiser_id_orig} IN (SELECT external_entity_value FROM ${highlevel_external_mapping.SQL_TABLE_NAME} WHERE external_system = 'DS3' AND olive_client_name IN ('Google','Google Fiber','Nest Labs')) ;;
+
+  join: googleinitiative {
+    from: googleinitiative
+    view_label: "MRF"
+    sql_on: ${googleinitiative.market_budget_id} = ${plan_dim.plan_id} ;;
+    relationship: one_to_one
+    type: left_outer
+  }
+
+  join: calendar {
+    from: allgoogle_calendar_dim
+    fields: [allgoogle_calendar_set*]
+  }
+
+
+
+}
+
+
+
+###################################################### *** DCM *** ##################################################################
+explore: google_dcm_dl {
+  extension: required
+  label: "Google Campaign Manager"
+  extends: [dcm_mixed_base_v2]
+
+  sql_always_where: ${dcm_mixed_fact.advertiser_id} IN (SELECT external_entity_value FROM ${highlevel_external_mapping.SQL_TABLE_NAME} WHERE external_system = 'DCM' AND olive_client_name IN ('Google','Google Fiber','Nest Labs')) ;;
+
+  fields: [dcm_mixed_fact.dcm_mixed_set*,
+    calendar.allgoogle_calendar_set*,
+    dcm_activity.dcm_mixed_set*,
+    dcm_floodlight_activity_groups.dcm_mixed_set*,
+    plan_dim.detail*,
+    unmapped_platform_data.unmapped_entities_set*,
+    fin_spend.measures_for_dcm*,
+    fin_spend.events*,
+    pr_media_plan_budget.cc_measures_and_dims*,
+    pr_plan_line_budget.cc_measures*,
+    tags.tags_set*,
+    dcm_placements.dcm_mixed_set*,
+    dcm_accounts.dcm_mixed_set*,
+    dcm_placement_strategies.dcm_mixed_set*,
+    dcm_directory_sites.dcm_mixed_set*,
+    dcm_sites.dcm_mixed_set*,
+    dcm_campaigns.dcm_mixed_set*,
+    dcm_advertisers.dcm_mixed_set*,
+    dcm_advertiser_groups.dcm_mixed_set*,
+    dcm_ads.dcm_mixed_set*,
+    dcm_creatives.dcm_mixed_set*,
+    googleinitiative.googleinitiative_set*,
+    dcm_extras_audio.audio_set*,
+    dcm_extras_active_view_and_rich_media.active_view_and_rich_media_set*,
+    mapped_events.mapped_events_set*,
+    dcm_most_blocked_content_clasifiers.ekg_most_blocked_category]
+
+  join: googleinitiative {
+    from: googleinitiative
+    view_label: "MRF"
+    sql_on: ${googleinitiative.market_budget_id} = ${plan_dim.plan_id} ;;
+    relationship: one_to_one
+    type: left_outer
+    fields: [googleinitiative_set*]
+  }
+
+  join: calendar {
+    from: allgoogle_calendar_dim
+    fields: [allgoogle_calendar_set*]
+  }
+
+}
+
+
+
+########################################################### *** DS3 Keyword *** #################################################################
+explore: google_ds3 {
+  extension: required
+  label: "Google SA360 Keyword"
+  extends: [ds3_dl_base]
+
+  sql_always_where: ${plan_dim.client_id} IN (2219,2540,2966)
+                    AND {% condition plan_dim.client_id %} ds3_mapped_fact.client_id {% endcondition %}
+                    AND {% condition plan_dim.client_name %} ds3_mapped_fact.client_name {% endcondition %}
+                    AND {% condition plan_dim.plan_id %} ds3_mapped_fact.plan_id {% endcondition %}
+                    AND {% condition calendar.calendar_date %} ds3_mapped_fact.date_of_activity {% endcondition %}
+                    AND {% condition calendar.yyyymm %} ds3_mapped_fact.yyyymm {% endcondition %};;
+  always_filter: {
+    filters: {
+      field: plan_dim.client_name
+      value: "Google, Nest Labs, Google Fiber"
+    }
+  }
+
+  join: calendar {
+    from: allgoogle_calendar_dim
+    fields: [allgoogle_calendar_set*]
+  }
+
+  join: googleinitiative {
+    from: googleinitiative
+    view_label: "MRF"
+    sql_on: ${googleinitiative.market_budget_id} = ${plan_dim.plan_id} ;;
+    relationship: one_to_one
+    type: left_outer
+    fields: [googleinitiative_set*]
+  }
+}
+
+explore: google_ds3_dl {
+  extends: [google_ds3]
+  hidden: yes
+}
+
+
+########################################################### *** Pacing *** #################################################################
+explore: google_pacing {
+  extension: required
+  label: "Google Pacing"
+  extends: [pacing_dl_base]
+  fields: [plan_dim.pacing_dl*,
+    fin_spend.pacing_set*,
+    plan_monthlybudget.plan_monthlybudget*,
+    plan_budgetdiscrepancyreason.cc_msc_reason_set*,
+    plan_mscuploadedcontent.plan_mscuploadedcontent*,
+    uploaded_person.plan_line_monthly_spend_confirmed_uploaded_by,
+    googleinitiative.googleinitiative_set*,
+    calendar.allgoogle_calendar_set*,
+    pr_plan_line_budget.pacing_measures*,
+    pr_media_plan_budget.pacing_measures*,
+    spend_past.plan_line_spend_past*]
+
+  sql_always_where: ${plan_dim.client_id} IN (2219,2540,2966) ;;
+  always_filter: {
+    filters: {
+      field: plan_dim.client_name
+      value: "Google, Nest Labs, Google Fiber"
+    }
+  }
+
+  join: calendar {
+    from: allgoogle_calendar_dim
+    fields: [allgoogle_calendar_set*]
+  }
+
+  join: googleinitiative {
+    from: googleinitiative
+    view_label: "MRF"
+    sql_on: ${googleinitiative.market_budget_id} = ${plan_dim.plan_id} ;;
+    relationship: one_to_one
+    type: left_outer
+    fields: [googleinitiative_set*]
+  }
+}
+
+explore: google_pacing_dl {
+  extends: [google_pacing]
+  hidden: yes
+}
+
+
+
+
+########################################################### *** Finance *** #################################################################
+explore: google_finance {
+  extension: required
+  label: "Google Finance"
+  extends: [finance_dl_base]
+
+  sql_always_where: ${plan_dim.client_id} IN (2219,2540,2966) ;;
+  always_filter: {
+    filters: {
+      field: plan_dim.client_name
+      value: "Google, Nest Labs, Google Fiber"
+    }
+  }
+
+  join: googleinitiative {
+    from: googleinitiative
+    view_label: "MRF"
+    sql_on: ${googleinitiative.market_budget_id} = ${plan_dim.plan_id} ;;
+    relationship: one_to_one
+    type: left_outer
+    fields: [googleinitiative_set*]
+  }
+}
+
+
+
+########################################################### *** Adwords *** #################################################################
+explore: google_adwords_dl {
+  extension: required
+  label: "Google Google Ads"
+  extends: [adwords_ad_performance_base]
+  fields: [pr_hive_adwords_ad_performance.adwords_ad_performance_set*,
+    call_duration_call_details.adwords_call_duration_set*,
+    fin_spend.measures_for_platforms*,
+    fin_spend.events*,
+    calendar.allgoogle_calendar_set*,
+    plan_dim.detail*,
+    unmapped_platform_data.unmapped_entities_set*,
+    segmentation_pivot.segm_set*,
+    pr_media_plan_budget.cc_measures_and_dims*,
+    pr_plan_line_budget.cc_measures*,
+    segmentation.category,
+    segmentation.segment,
+    googleinitiative.googleinitiative_set*,
+    mapped_events.mapped_events_set*]
+
+  sql_always_where: ${pr_hive_adwords_ad_performance.customer_id} IN (SELECT external_entity_value FROM ${highlevel_external_mapping.SQL_TABLE_NAME} WHERE external_system = 'ADWORDS' AND olive_client_name IN ('Google','Google Fiber','Nest Labs')) ;;
+
+  join: calendar {
+    from: allgoogle_calendar_dim
+    fields: [allgoogle_calendar_set*]
+  }
+
+  join: googleinitiative {
+    from: googleinitiative
+    view_label: "MRF"
+    sql_on: ${googleinitiative.market_budget_id} = ${plan_dim.plan_id} ;;
+    relationship: one_to_one
+    type: left_outer
+    fields: [googleinitiative_set*]
+  }
+}
+
+
+
+########################################################### *** DBM *** #################################################################
+explore: google_dbm_geo_dl {
+  extension: required
+  label: "Google DV360 Geo"
+  extends: [dbm_metrics_geo_report_base]
+  hidden: yes
+
+  sql_always_where: ${plan_dim.client_id} IN (2219,2540,2966) ;;
+  always_filter: {
+    filters: {
+      field: plan_dim.client_name
+      value: "Google, Nest Labs, Google Fiber"
+    }
+  }
+
+  join: googleinitiative {
+    from: googleinitiative
+    view_label: "MRF"
+    sql_on: ${googleinitiative.market_budget_id} = ${plan_dim.plan_id} ;;
+    relationship: one_to_one
+    type: left_outer
+    fields: [googleinitiative_set*]
+  }
+
+  join: calendar {
+    from: allgoogle_calendar_dim
+    fields: [allgoogle_calendar_set*]
+  }
+}
+
+
+explore: google_dbm_device_dl {
+  label: "Google DV360 Device"
+  extends: [dbm_metrics_device_report_base]
+  hidden: yes
+
+  sql_always_where: ${plan_dim.client_id} IN (2219,2540,2966) ;;
+  always_filter: {
+    filters: {
+      field: plan_dim.client_name
+      value: "Google, Nest Labs, Google Fiber"
+    }
+  }
+
+  join: googleinitiative {
+    from: googleinitiative
+    view_label: "MRF"
+    sql_on: ${googleinitiative.market_budget_id} = ${plan_dim.plan_id} ;;
+    relationship: one_to_one
+    type: left_outer
+    fields: [googleinitiative_set*]
+  }
+
+  join: calendar {
+    from: allgoogle_calendar_dim
+    fields: [allgoogle_calendar_set*]
+  }
+}
+
+
+explore: google_dbm_metrics_dl {
+  extension: required
+  label: "Google DV360 Metrics"
+  extends: [dbm_metrics_conversions_mixed_base_v2]
+  fields: [dbm_metrics_conversions_mixed.metrics_set*,
+    dbm_campaign_dimension.campaign_status,
+    dbm_campaign_dimension.campaign_id,
+    dbm_campaign_dimension.campaign_name,
+    googleinitiative.googleinitiative_set*,
+    calendar.allgoogle_calendar_set*,
+    unmapped_platform_data.unmapped_entities_set*,
+    plan_dim.detail*,
+    pr_media_plan_budget.cc_measures_and_dims*,
+    pr_plan_line_budget.cc_measures*,
+    segmentation_pivot.segm_set*,
+    segmentation.category,
+    segmentation.segment,
+    fin_spend.measures_for_platforms*,
+    fin_spend.events*,
+    mapped_events.mapped_events_set*]
+
+  sql_always_where: ${dbm_metrics_conversions_mixed.advertiser_id} IN (SELECT external_entity_value FROM ${highlevel_external_mapping.SQL_TABLE_NAME} WHERE external_system = 'DBM' AND olive_client_name IN ('Google','Google Fiber','Nest Labs')) ;;
+
+  join: googleinitiative {
+    from: googleinitiative
+    view_label: "MRF"
+    sql_on: ${googleinitiative.market_budget_id} = ${plan_dim.plan_id} ;;
+    relationship: one_to_one
+    type: left_outer
+    fields: [googleinitiative_set*]
+  }
+
+  join: calendar {
+    from: allgoogle_calendar_dim
+    fields: [allgoogle_calendar_set*]
+  }
+}
+
+
+
+
+########################################################### *** Facebook *** #################################################################
+explore: google_facebook_dl {
+  extension: required
+  label: "Google Facebook"
+  extends: [facebook_mixed_base]
+
+  sql_always_where: ${fb_account_dimension.account_id} IN (SELECT external_entity_value FROM ${highlevel_external_mapping.SQL_TABLE_NAME} WHERE external_system = 'FACEBOOK' AND olive_client_name IN ('Google','Google Fiber','Nest Labs')) ;;
+
+
+  join: googleinitiative {
+    from: googleinitiative
+    view_label: "MRF"
+    sql_on: ${googleinitiative.market_budget_id} = ${plan_dim.plan_id} ;;
+    relationship: one_to_one
+    type: left_outer
+    fields: [googleinitiative_set*]
+  }
+
+  join: calendar {
+    from: allgoogle_calendar_dim
+    fields: [allgoogle_calendar_set*]
+  }
+}
+
+
+
+
+########################################################### *** Brand Metrics *** #################################################################
+explore: google_brand_metrics {
+  extension: required
+  label: "Google Brand Metrics"
+  extends: [brand_metrics_base_v3]
+
+  sql_always_where: ${plan_dim.client_id} IN (2219,2540,2966) ;;
+  always_filter: {
+    filters: {
+      field: plan_dim.client_name
+      value: "Google, Nest Labs, Google Fiber"
+    }
+  }
+
+  join: calendar {
+    from: pr_all_google_calendar_dim
+    fields: [allgoogle_calendar_set*]
+  }
+}
+
+
+
+########################################################### *** Snapchat *** ######################################################
+explore: google_snapchat {
+  extension: required
+  label: "Google Snapchat"
+  extends: [snapchat_base]
+
+  sql_always_where: ${snapchat_account_stats.client} IN (SELECT external_entity_value
+                                                           FROM ${highlevel_external_mapping_dl.SQL_TABLE_NAME}
+                                                          WHERE external_system = 'SNAPCHAT' AND olive_client_name IN ('Google','Google Fiber','Nest Labs')) ;;
+
+    join: calendar {
+      from: allgoogle_calendar_dim
+      fields: [allgoogle_calendar_set*]
+    }
+
+    join: googleinitiative {
+      from: googleinitiative
+      view_label: "MRF"
+      sql_on: ${googleinitiative.market_budget_id} = ${plan_dim.plan_id} ;;
+      relationship: one_to_one
+      type: left_outer
+      fields: [googleinitiative_set*]
+    }
+  }
+
+
+
+########################################################### *** Twitter *** ######################################################
+  explore: google_twitter {
+    extension: required
+    label: "Google Twitter"
+    extends: [twitter_base]
+    fields: [twitter_account_stats.twitter_acc_set*,
+      calendar.allgoogle_calendar_set*,
+      unmapped_platform_data.unmapped_entities_set*,
+      plan_dim.detail*,
+      tags.tags_set*,
+      pr_media_plan_budget.cc_measures_and_dims*,
+      pr_plan_line_budget.cc_measures*,
+      googleinitiative.googleinitiative_set*,
+      segmentation_pivot.segm_set*,
+      segmentation.segm_set*]
+
+    sql_always_where: ${twitter_account_stats.client} IN (SELECT external_entity_value
+                                                          FROM ${highlevel_external_mapping_dl.SQL_TABLE_NAME}
+                                                         WHERE external_system = 'TWITTER' AND olive_client_name IN ('Google','Google Fiber','Nest Labs')) ;;
+
+      join: calendar {
+        from: allgoogle_calendar_dim
+        fields: [allgoogle_calendar_set*]
+      }
+
+      join: googleinitiative {
+        from: googleinitiative
+        view_label: "MRF"
+        sql_on: ${googleinitiative.market_budget_id} = ${plan_dim.plan_id} ;;
+        relationship: one_to_one
+        type: left_outer
+        fields: [googleinitiative_set*]
+      }
+    }
+
+
+
+########################################################### *** LinkedIn *** ######################################################
+    explore: google_linkedin {
+      extension: required
+      label: "Google LinkedIn"
+      extends: [linkedin_base]
+
+      sql_always_where: ${linkedin_account_stats.client} IN (SELECT external_entity_value
+                                                           FROM ${highlevel_external_mapping_dl.SQL_TABLE_NAME}
+                                                          WHERE external_system = 'LINKEDIN' AND olive_client_name IN ('Google','Google Fiber','Nest Labs')) ;;
+
+        join: calendar {
+          from: allgoogle_calendar_dim
+          fields: [allgoogle_calendar_set*]
+        }
+
+        join: googleinitiative {
+          from: googleinitiative
+          view_label: "MRF"
+          sql_on: ${googleinitiative.market_budget_id} = ${plan_dim.plan_id} ;;
+          relationship: one_to_one
+          type: left_outer
+          fields: [googleinitiative_set*]
+        }
+      }
+
+
+
+########################################################### *** Amazon *** ######################################################
+      explore: google_amazon {
+        extension: required
+        label: "Google Amazon"
+        extends: [amazon_base]
+        fields: [amazon_all_data.amazon_set*,
+          calendar.allgoogle_calendar_set*,
+          googleinitiative.googleinitiative_set*,
+          unmapped_platform_data.unmapped_entities_set*,
+          plan_dim.detail*,
+          tags.tags_set*,
+          pr_media_plan_budget.cc_measures_and_dims*,
+          pr_plan_line_budget.cc_measures*,
+          segmentation_pivot.segm_set*,
+          segmentation.segm_set*
+        ]
+
+        sql_always_where: CAST(${amazon_all_data.advertiser_id} AS VARCHAR) IN (SELECT external_entity_value
+                                                                            FROM ${highlevel_external_mapping_dl.SQL_TABLE_NAME}
+                                                                           WHERE external_system = 'AMAZON' AND olive_client_name IN ('Google','Google Fiber','Nest Labs')) ;;
+
+          join: calendar {
+            from: allgoogle_calendar_dim
+            fields: [allgoogle_calendar_set*]
+          }
+
+          join: googleinitiative {
+            from: googleinitiative
+            view_label: "MRF"
+            sql_on: ${googleinitiative.market_budget_id} = ${plan_dim.plan_id} ;;
+            relationship: one_to_one
+            type: left_outer
+            fields: [googleinitiative_set*]
+          }
+        }
+
+
+
+######################################################## *** Datalab Dictionary *** #######################################################
+        explore: google_datalab_dictionary {
+          extension: required
+          extends: [datalab_dictionary_base]
+          label: "Google Datalab Dictionary"
+
+          sql_always_where: ${explores.model_name} IN ('{{ _model._name }}', 'google') AND NOT ${explores.hidden} AND NOT ${fields.hidden} ;;
+
+          fields: [explores.clients_set*,
+            fields.clients_set*]
+        }

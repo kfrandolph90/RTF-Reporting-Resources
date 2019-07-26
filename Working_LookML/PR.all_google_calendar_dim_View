@@ -1,0 +1,126 @@
+include: "//olive/PR.hive_olive_calendar_dim.view.lkml"
+
+view: pr_all_google_calendar_dim {
+  extends: [pr_hive_olive_calendar_dim]
+
+  dimension: calendar_week {
+    label: "5.1 Week Number (Mon-Sun)"
+    type: number
+    sql: ${TABLE}.calendar_week ;;
+    order_by_field: yyyyww
+    tags: ["calendar_week"]
+  }
+
+  dimension: week_sun_sat {
+    label: "5.2 Week Number (Sun-Sat)"
+    type: number
+    sql: WEEK (${TABLE}.calendar_date + INTERVAL '1' DAY) ;;
+  }
+
+  dimension: week_start_date {
+    label: "3.1 Week Beginning (Mon-Sun)"
+    type: date
+    sql: ${TABLE}.week_start_date ;;
+    tags: ["calendar_week_start_date"]
+    allow_fill: no
+  }
+
+  dimension: week_start_sun {
+    label: "3.2 Week Beginning (Sun-Sat)"
+    type: date
+    sql: CASE ${TABLE}.weekday WHEN 'Sunday' THEN ${TABLE}.calendar_date ELSE ${TABLE}.week_start_date - INTERVAL '1' DAY END ;;
+  }
+
+  dimension: week_end_date {
+    label: "4.1 Week Ending (Mon-Sun)"
+    type: date
+    sql: ${TABLE}.week_end_date ;;
+    tags: ["calendar_week_end_date"]
+    allow_fill: no
+  }
+
+  dimension: week_end_sat {
+    label: "4.2 Week Ending (Sun-Sat)"
+    type: date
+    sql: CASE ${TABLE}.weekday WHEN 'Sunday' THEN ${TABLE}.calendar_date + INTERVAL '6' DAY ELSE ${TABLE}.week_end_date - INTERVAL '1' DAY END ;;
+  }
+
+  dimension: week_nest {
+    label: "5. Week Number (Calendar)"
+    type: number
+    sql: WEEK (${TABLE}.calendar_date + INTERVAL '1' DAY) ;;
+  }
+
+  dimension: yyyyww_nest {
+    label: "YYYYWW (Sun-Sat)"
+    type: number
+    sql: CAST(CAST(YEAR (${TABLE}.calendar_date + INTERVAL '1' DAY) AS VARCHAR) || LPAD(CAST(WEEK(${TABLE}.calendar_date + INTERVAL '1' DAY) AS VARCHAR), 2, '0') AS INTEGER)  ;;
+    value_format: "######"
+  }
+
+  dimension: latest_saturday {
+    sql: CASE
+           WHEN DAY_OF_WEEK(CURRENT_DATE) = 7 THEN CURRENT_DATE - INTERVAL '1' DAY
+           ELSE DATE_TRUNC('week',CURRENT_DATE) - INTERVAL '2' DAY
+         END ;;
+    hidden: yes
+  }
+
+  dimension: before_latest_week_end {
+    label: "Before End of Latest Reporting Week(Sun-Sat)"
+    type: yesno
+    sql: ${TABLE}.calendar_date <= ${latest_saturday} ;;
+    allow_fill: no
+  }
+
+  dimension: re-label {
+    label: "re-label"
+    type: string
+    sql: CASE WHEN ${TABLE}.plan_dim.plan_placement_name LIKE '%Thermo%" THEN 'Nest Thermostat'
+WHEN ${TABLE}.plan_dim.plan_placement_name LIKE '%Doorbell%" THEN 'Nest Doorbell'
+WHEN ${TABLE}.plan_dim.plan_placement_name LIKE '%Nest Cam%' THEN 'Nest Camera'
+WHEN ${TABLE}.plan_dim.plan_placement_name LIKE '%Pixel Lite%' THEN 'Pixel 3A'
+WHEN ${TABLE}.plan_dim.plan_placement_name LIKE '%Daydream%' THEN 'Daydream View'
+WHEN ${TABLE}.plan_dim.plan_placement_name LIKE '%Hub%' THEN 'Home Hub'
+WHEN ${TABLE}.plan_dim.plan_placement_name LIKE '%MT%' THEN 'Pixel 3A'
+WHEN ${TABLE}.plan_dim.plan_placement_name LIKE '%Wifi%' THEN 'Google WiFi'
+WHEN ${TABLE}.plan_dim.plan_placement_name LIKE '%_Home_%' THEN 'Home'
+WHEN ${TABLE}.plan_dim.plan_placement_name LIKE '%Mini%' THEN 'Home Mini'
+WHEN ${TABLE}.plan_dim.plan_placement_name LIKE '%book%' THEN 'Pixelbook'
+WHEN ${TABLE}.plan_dim.plan_placement_name LIKE '%bud%' THEN 'Pixel Buds'
+WHEN ${TABLE}.plan_dim.plan_placement_name LIKE '%Slate%' THEN 'Pixel Slate'
+WHEN ${TABLE}.plan_dim.plan_placement_name LIKE '%Stand%' THEN 'Pixel Stand'
+WHEN ${TABLE}.plan_dim.plan_placement_name LIKE '%CC%' THEN 'Chromecast'
+WHEN ${TABLE}.plan_dim.plan_placement_name LIKE '%Max%' THEN 'Home Max'
+WHEN ${TABLE}.plan_dim.plan_placement_name LIKE '%Clips%' THEN 'Clips'
+WHEN ${TABLE}.plan_dim.plan_placement_name LIKE '%Hub Max%' THEN 'Home Hub Max'
+ELSE ${TABLE} END ;;
+  }
+
+
+
+  set: allgoogle_calendar_set {
+    fields: [calendar_date
+      ,calendar_month
+      ,calendar_week
+      ,calendar_quarter
+      ,calendar_year
+      ,month_num
+      ,quarter
+      ,latest_sunday
+      ,before_latest_sunday
+      ,week_start_date
+      ,week_end_date
+      ,week_start_sun
+      ,week_end_sat
+      ,week_sun_sat
+      ,weekday
+      ,yyyymm
+      ,yyyyww
+      ,week_nest
+      ,yyyyww_nest
+      ,latest_saturday
+      ,before_latest_week_end]
+  }
+
+}

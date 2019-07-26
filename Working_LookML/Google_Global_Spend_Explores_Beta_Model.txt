@@ -1,0 +1,62 @@
+include: "RTF*.lkml"
+include : "Google_Global*.lkml"
+
+label: "Google Global Spend Explore Beta"
+########################################################### *** Non SEM *** #################################################################
+
+explore: Google_Global_Spend_Cross_Channel {
+  label: "Cross Channel Classifications"
+  extends: [google_cross_channel]
+####################################################
+  join : Region_Plan_Region{
+    type: left_outer
+    sql_on: ${plan_dim.plan_region} = ${Region_Plan_Region.product_pk} ;;
+    relationship :  many_to_one
+    view_label: "1 - blablalblba"
+
+  }
+####################################################
+
+join:  Region_Plan_Line_Name {
+
+  type: left_outer
+  sql_on: ${plan_dim.plan_line_name} = ${Region_Plan_Line_Name.plan_line_name_pk} ;;
+  relationship :  many_to_one
+  view_label: "1 - blablalblba"
+}
+
+###################################################
+
+
+  join:  Region_Plan_Name {
+
+    type: left_outer
+    sql_on: ${plan_dim.plan_name} = ${Region_Plan_Name.plan_name_pk} ;;
+    relationship :  many_to_one
+    view_label: "1 - blablalblba"
+  }
+
+
+###################################################
+
+
+  join:  Region_Campaign_Name {
+
+    type: left_outer
+    sql_on: ${plan_dim.campaign_name} = ${Region_Campaign_Name.campaign_name_pk} ;;
+    relationship :  many_to_one
+    view_label: "1 - blablalblba"
+  }
+
+  join:  Product_Campaign_Name {
+
+    type: left_outer
+    sql_on: ${plan_dim.campaign_name} = ${Product_Campaign_Name.product_campaign_name_pk} ;;
+    relationship :  many_to_one
+    view_label: "1 - blablalblba"
+  }
+
+
+
+
+}
