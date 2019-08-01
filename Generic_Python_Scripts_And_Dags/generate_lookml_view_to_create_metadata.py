@@ -1,7 +1,3 @@
-label = ""
-relabel = ""
-
-
 # Will become metadataname_label and metadataname_relabel in Looker
 metadataname = ''
 
