@@ -1,9 +1,5 @@
-label = ""
-relabel = ""
-
-
 # Will become metadataname_label and metadataname_relabel in Looker
-metadataname = 'pubs_final'
+metadataname = ''
 
 
 # Must manually paste from sheets. Make sure there is no space between the open and end quotation marks.
@@ -12,7 +8,7 @@ label = '''
 '''
 
 
-relabel = '''YouTube
+relabel = '''
 
 
 '''
