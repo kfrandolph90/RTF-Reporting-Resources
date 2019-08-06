@@ -1,0 +1,8 @@
+ bq load --autodetect  --source_format=CSV rtf_pixel_brand_report.datalab_export gs://rtf_bonito_wip/'Pixel Brand Report - Upload File 2019-08-05T1005.csv' &&
+ bq load --autodetect  --source_format=NEWLINE_DELIMITED_JSON rtf_pixel_brand_report.moat_fb_disp gs://rtf_bonito_wip/moat_fb_display.json && 
+ bq load --autodetect  --source_format=NEWLINE_DELIMITED_JSON rtf_pixel_brand_report.moat_fb_vid gs://rtf_bonito_wip/moat_fb_video.json && 
+ bq load --autodetect  --source_format=NEWLINE_DELIMITED_JSON rtf_pixel_brand_report.moat_google_disp  gs://rtf_bonito_wip/moat_google_display.json &&
+ bq load --autodetect  --source_format=NEWLINE_DELIMITED_JSON rtf_pixel_brand_report.moat_google_vid  gs://rtf_bonito_wip/moat_google_video.json &&
+ bq load --autodetect  --source_format=NEWLINE_DELIMITED_JSON rtf_pixel_brand_report.moat_ig_disp  gs://rtf_bonito_wip/moat_ig_display.json &&
+ bq load --autodetect  --source_format=NEWLINE_DELIMITED_JSON rtf_pixel_brand_report.moat_yt_res gs://rtf_bonito_wip/'YT Reserve.json' &&
+ bq load --autodetect  --source_format=NEWLINE_DELIMITED_JSON rtf_pixel_brand_report.moat_yt_trv gs://rtf_bonito_wip/'Essence Google TrueView.json'
