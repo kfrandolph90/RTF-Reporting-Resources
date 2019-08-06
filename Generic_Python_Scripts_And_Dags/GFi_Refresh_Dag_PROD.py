@@ -44,7 +44,7 @@ def_args = {
     'email': ['noah.hazan@essenceglobal.com'],
     'email_on_failure': False,
     'email_on_retry': False,
-    'retries': 0,
+    'retries': 1,
     'execution_timeout': timedelta(minutes=10),
     'task_concurrency': 1,
     'retry_delay': timedelta(minutes=2)
@@ -202,9 +202,9 @@ def refreshGeneric(**kwargs):
 
 
 # Define the DAG
-dag = DAG('TESTING', description='test',
+dag = DAG('RTF_GFi_Refresh_PROD', description='Refreshes Google Fi Data From gSheets',
           default_args=def_args,
-          schedule_interval= "@once",
+          schedule_interval= "@weekly",
           start_date=datetime(2019,8,6), catchup=False)
 
 
