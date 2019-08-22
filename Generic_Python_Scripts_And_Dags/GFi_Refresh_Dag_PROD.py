@@ -104,14 +104,14 @@ def readSheetData(service,sheet_id,data_range):
 
 PROJECT_ID='essence-analytics-dwh'
 sheet_id = "1cefjnQazJxC9gbrPK1IxETedqQDTvPdV4WdsEykZARY"
-source = ['Data | Bing SEM!A2:L367','Data | Brand SEM!A2:H367','Data | Non-Brand BVOS SEM!A2:H367','Data | GDN!A2:J367','Data | Google SEM!A2:L367', 'Data | Non-Brand SEM!A2:H367','Data | Yahoo Native!A2:J48','Data | YouTube!A2:I366', 'Device Fires!A2:B7', 'Device Fires!A11:B16', 'Device Fires!A20:B25', 'Device Fires!E2:F7', 'SEM!B18:I28' ]
-destination=['rtf.Bing_SEM_Data', 'rtf.Brand_SEM_Data','rtf.BVOS_Data','rtf.GDN_Data','rtf.Google_SEM_Data','rtf.Non_Brand_SEM_Data','rtf.Yahoo_Data','rtf.Youtube_Data', 'rtf.Device_SEM', 'rtf.Device_GDN', 'rtf.Device_Youtube', 'rtf.Device_All', 'rtf.Keyword_CPA']
+source = ['Data | Bing SEM!A2:L367','Data | Brand SEM Master!A2:H367','Data | Non-Brand BVOS SEM Master!A2:H367','Data | GDN!A2:J367','Data | Google SEM Master!A2:L367', 'Data | Non-Brand SEM Master!A2:H367','Data | Yahoo Native!A2:J48','Data | YouTube!A2:I366', 'Device Fires!A2:B7', 'Device Fires!A11:B16', 'Device Fires!A20:B25', 'Device Fires!E2:F7', 'SEM!B18:I28', 'Data | Reddit!A2:L367' ]
+destination=['rtf.Bing_SEM_Data', 'rtf.Brand_SEM_Data','rtf.BVOS_Data','rtf.GDN_Data','rtf.Google_SEM_Data','rtf.Non_Brand_SEM_Data','rtf.Yahoo_Data','rtf.Youtube_Data', 'rtf.Device_SEM', 'rtf.Device_GDN', 'rtf.Device_Youtube', 'rtf.Device_All', 'rtf.Keyword_CPA','rtf.Reddit_Data']
 
 #scope table example is Global_Goals.Consolidate.
 source_destination = dict(zip(source, destination))
 
 
-taskIDs = ['refresh_Bing_SEM','refresh_Brand_SEM', 'refresh_BVOS', 'refresh_GDN','refresh_Google_SEM', 'refresh_Non_Brand_SEM', 'refresh_Yahoo', 'refresh_Youtube', 'refresh_Device_SEM', 'refresh_Device_GDN', 'refresh_Device_Youtube', 'refresh_Device_All', 'refresh_Keyword_CPA']
+taskIDs = ['refresh_Bing_SEM','refresh_Brand_SEM', 'refresh_BVOS', 'refresh_GDN','refresh_Google_SEM', 'refresh_Non_Brand_SEM', 'refresh_Yahoo', 'refresh_Youtube', 'refresh_Device_SEM', 'refresh_Device_GDN', 'refresh_Device_Youtube', 'refresh_Device_All', 'refresh_Keyword_CPA', 'refresh_Reddit_Data']
 
 
 def refreshGeneric(**kwargs):
@@ -139,7 +139,7 @@ def refreshGeneric(**kwargs):
     df.columns = df.columns.str.replace('/', '_')
     df.columns = df.columns.str.replace('__', '_')
 
-    if kwargs['source'] == 'Data | Google SEM!A2:L367' :
+    if kwargs['source'] == 'Data | Google SEM Master!A2:L367' :
         df['Impressions']=df['Impressions'].str.replace(',','')
         df['Impressions']=df['Impressions'].astype(float)
         df['Clicks']=df['Clicks'].str.replace(',','')
@@ -239,8 +239,8 @@ def refreshGeneric(**kwargs):
 # Define the DAG
 dag = DAG('RTF_GFi_Refresh_PROD', description='Refreshes Google Fi Data From gSheets',
           default_args=def_args,
-          schedule_interval= "@weekly",
-          start_date=datetime(2019,8,14), catchup=False)
+          schedule_interval= "20 4 1 * *",
+          start_date=datetime(2019,8,20), catchup=False)
 
 
 

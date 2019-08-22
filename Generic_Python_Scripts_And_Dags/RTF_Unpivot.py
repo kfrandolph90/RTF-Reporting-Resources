@@ -98,6 +98,10 @@ def readSheetData(service,sheet_id,data_range):
     headers = values.pop(0)
 
 
+lookerDrop = ['Google_Store_NA_Non_SEM_Product_Feed', 'Google_Store_NA_SEM_Product_Feed']
+queries = ['SELECT * FROM `essence-analytics-dwh.rtf_dev.v_unpivot_working`', 'SELECT * FROM `essence-analytics-dwh.rtf_dev.v_unpivot_Non_SEM`']
+
+lookerDrop_queries = dict(zip(lookerDrop,queries))
 
 PROJECT_ID='essence-analytics-dwh'
 
@@ -116,7 +120,7 @@ def refreshGeneric(**kwargs):
     credentialsFromVault=getCredentialsFromVault(service_account_email)
     credentialsFromVault = credentialsFromVault.with_scopes(API_SCOPES)
     sheet_service = build('sheets', 'v4', credentials=credentialsFromVault,cache_discovery=False)
-    SCOPE_TABLE='rtf_unpivot_from_looker' #scope table example is Global_Goals.Consolidate.
+    SCOPE_TABLE= kwargs['lookerDrop'] + "_fromLooker" #scope table example is Global_Goals.Consolidate.
     dataset_id='rtf_dev'
     client = bq.Client()
     dataset_ref = client.dataset(dataset_id)
@@ -126,7 +130,7 @@ def refreshGeneric(**kwargs):
     job_config.write_disposition = bq.WriteDisposition.WRITE_TRUNCATE
     # The source format defaults to CSV, so the line below is optional.
     job_config.source_format = bq.SourceFormat.CSV
-    uri = "gs://sixty-analytics/RTF_Unpivot"
+    uri = "gs://sixty-analytics/" + kwargs['lookerDrop']
     load_job = client.load_table_from_uri(
         uri, dataset_ref.table(SCOPE_TABLE),  job_config=job_config
     )  # API request
@@ -140,10 +144,10 @@ def refreshGeneric(**kwargs):
 
 
 # Define the DAG
-dag = DAG('RTF_Unpivot_Refresh', description='Refreshes Unpivot Data From Looker -> GCS To BQ',
+dag = DAG('rtf_PROD_unpivot_refresh_FINAL', description='Refreshes Unpivot Data From Looker -> GCS To BQ',
           default_args=def_args,
-          schedule_interval= "45 4 1 * *",
-          start_date=datetime(2019,8,12), catchup=False)
+          schedule_interval= "15 6 * * *",
+          start_date=datetime(2019,8,21), catchup=False)
 
 
 
@@ -153,26 +157,27 @@ end_dummy_task = DummyOperator(task_id='end_dummy_task', dag=dag)
 
 
 
+
 def sendToGCS(**kwargs):
     client = bq.Client()
 
     # Write query results to a new table
     job_config = bq.QueryJobConfig()
-    table_ref = client.dataset("rtf_dev").table("RTF_Unpivot_AirflowCopied")
+    table_ref = client.dataset("rtf_dev").table(kwargs['lookerDrop'])
     job_config.destination = table_ref
     job_config.write_disposition = bq.WriteDisposition.WRITE_TRUNCATE
 
     query_job = client.query(
-        'SELECT * FROM `essence-analytics-dwh.rtf_dev.v_unpivot_working` ',
+        kwargs['queries'],
         location='US', # Location must match dataset
         job_config=job_config)
     rows = list(query_job)  # Waits for the query to finish
 
 
     # Export table to GCS
-    destination_uri = "gs://sixty-analytics/RTF_Unpivot_AirflowCopied"
+    destination_uri = "gs://sixty-analytics/" + kwargs['lookerDrop'] + '.csv'
     dataset_ref = client.dataset("rtf_dev", project="essence-analytics-dwh")
-    table_ref = dataset_ref.table("RTF_Unpivot_AirflowCopied")
+    table_ref = dataset_ref.table(kwargs['lookerDrop'])
 
     extract_job = client.extract_table(
         table_ref,
@@ -181,27 +186,23 @@ def sendToGCS(**kwargs):
     extract_job.result()
 
 
+for lookerDrop, queries in lookerDrop_queries.items():
+    task = PythonOperator(
+    task_id = lookerDrop + '_refresh',
+    python_callable = refreshGeneric,
+    op_kwargs = {
+    'lookerDrop' : lookerDrop
+    },
+    dag = dag, provide_context = True)
+
+    task2 = PythonOperator(
+    task_id = 'Export_' + lookerDrop,
+    python_callable = sendToGCS,
+    op_kwargs = {
+    'queries' : queries,
+    'lookerDrop' : lookerDrop
+    },
+    dag = dag, provide_context = True)
 
 
-
-
-
-
-
-
-
-
-
-
-task = PythonOperator(
-task_id = 'RTF_Unpivot_Refresh',
-python_callable = refreshGeneric,
-dag = dag, provide_context = True)
-
-task2 = PythonOperator(
-task_id = 'Export_RTF_Unpivot_Refresh',
-python_callable = sendToGCS,
-dag = dag, provide_context = True)
-
-
-start_dummy_task >> task >> task2 >> end_dummy_task
+    start_dummy_task >> task >> task2 >> end_dummy_task
