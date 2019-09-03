@@ -175,7 +175,7 @@ def sendToGCS(**kwargs):
 
 
     # Export table to GCS
-    destination_uri = "gs://sixty-analytics/" + kwargs['lookerDrop'] + '.csv'
+    destination_uri = "gs://paid_media_data/" + kwargs['lookerDrop'] + '.csv'
     dataset_ref = client.dataset("rtf_dev", project="essence-analytics-dwh")
     table_ref = dataset_ref.table(kwargs['lookerDrop'])
 
